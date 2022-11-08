@@ -19,14 +19,21 @@ app.get('/', (req, res) => {
 
 // ---> mongodb setup
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.76zc9vk.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri)
+
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 const run = async () => {
     try {
-        //---> services 
-        app.get('/services', (req, res) => {
+        // ---> collections
+        const servicesCollection = client.db("petsHealthCare").collection("services");
 
+        //--->home page services 
+        app.get('/services', async (req, res) => {
+            const limit = parseInt(req.query.limit);
+            const query = {};
+            const result3 = await servicesCollection.find(query).limit(limit).toArray();
+            const result = await servicesCollection.find(query).toArray();
+            res.send({ result, result3 })
         })
 
     } finally { }
