@@ -28,6 +28,8 @@ const run = async () => {
         const servicesCollection = client.db("petsHealthCare").collection("services");
         const reviewsCollection = client.db("petsHealthCare").collection("reviews");
 
+        // ---> jwt token
+
         //---> services 
         app.get('/services', async (req, res) => {
             const limit = parseInt(req.query.limit);
@@ -60,6 +62,25 @@ const run = async () => {
             const result = await cursor.toArray()
             res.send(result)
         })
+
+        // ---> my reviews
+        app.get('/my-reviews', async (req, res) => {
+            const email = req.query.email;
+            const query = { userEmail: email };
+            const cursor = reviewsCollection.find(query);
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        // ---> delete review
+        app.delete('/my-reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await reviewsCollection.deleteOne(query);
+            res.send(result)
+        })
+
+
 
     } finally { }
 }
