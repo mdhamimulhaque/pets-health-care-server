@@ -39,6 +39,13 @@ const run = async () => {
             res.send({ services, service3 })
         })
 
+        // ---> create || add services
+        app.post("/services", async (req, res) => {
+            const service = req.body;
+            const result = await servicesCollection.insertOne(service);
+            res.send(result)
+        })
+
         // single-services
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
