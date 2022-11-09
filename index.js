@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
@@ -29,6 +30,29 @@ const run = async () => {
         const reviewsCollection = client.db("petsHealthCare").collection("reviews");
 
         // ---> jwt token
+        app.post('/jwt', (req, res) => {
+            const user = req.body;
+            var token = jwt.sign(user, process.env.SECRET_TOKEN, { expiresIn: '1d' });
+            res.send({ token })
+        })
+
+        // ---> jsn token verify
+        const verifyToken = (req, res, next) => {
+            const authHeader = req.headers.authorization;
+            if (!authHeader) {
+                return res.status(401).send({ message: 'unauthorized access' })
+            }
+            const token = authHeader.split(' ')[1];
+            // ---.(token verify)
+            jwt.verify(token, process.env.SECRET_TOKEN, (err, decoded) => {
+                if (err) {
+                    return res.status(403).send({ message: 'unauthorized access' })
+                }
+                req.decoded = decoded;
+                next()
+            })
+
+        }
 
         //---> services 
         app.get('/services', async (req, res) => {
@@ -71,9 +95,20 @@ const run = async () => {
         })
 
         // ---> my reviews
-        app.get('/my-reviews', async (req, res) => {
+        app.get('/my-reviews', verifyToken, async (req, res) => {
+            const decoded = req.decoded;
             const email = req.query.email;
-            const query = { userEmail: email };
+            if (decoded.email !== req.query.email) {
+                res.status(403).send({ message: 'unauthorized access' })
+            }
+            let query = {};
+
+            if (email) {
+                query = {
+                    userEmail: email
+                }
+            }
+
             const cursor = reviewsCollection.find(query);
             const result = await cursor.toArray()
             res.send(result)
