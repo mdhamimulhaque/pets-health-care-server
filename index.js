@@ -26,14 +26,15 @@ const run = async () => {
     try {
         // ---> collections
         const servicesCollection = client.db("petsHealthCare").collection("services");
+        const reviewsCollection = client.db("petsHealthCare").collection("reviews");
 
         //---> services 
         app.get('/services', async (req, res) => {
             const limit = parseInt(req.query.limit);
             const query = {};
-            const result3 = await servicesCollection.find(query).limit(limit).toArray();
-            const result = await servicesCollection.find(query).toArray();
-            res.send({ result, result3 })
+            const service3 = await servicesCollection.find(query).limit(limit).toArray();
+            const services = await servicesCollection.find(query).toArray();
+            res.send({ services, service3 })
         })
 
         // single-services
@@ -42,6 +43,13 @@ const run = async () => {
             const query = { _id: ObjectId(id) };
             const service = await servicesCollection.findOne(query);
             res.send(service)
+        })
+
+        // ---> post || create review
+        app.post('/review', async (req, res) => {
+            const reviewItem = req.body;
+            const result = await reviewsCollection.insertOne(reviewItem);
+            res.send(result)
         })
 
     } finally { }
