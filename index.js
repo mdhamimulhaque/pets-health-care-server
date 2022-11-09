@@ -52,6 +52,15 @@ const run = async () => {
             res.send(result)
         })
 
+        // ---> read || show service based review
+        app.get('/reviews/:title', async (req, res) => {
+            const title = req.params.title;
+            const query = { serviceTitle: title };
+            const cursor = reviewsCollection.find(query);
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
     } finally { }
 }
 run().catch(err => console.log(err))
