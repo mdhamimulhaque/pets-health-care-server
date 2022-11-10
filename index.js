@@ -29,6 +29,7 @@ const run = async () => {
         const servicesCollection = client.db("petsHealthCare").collection("services");
         const reviewsCollection = client.db("petsHealthCare").collection("reviews");
         const blogsCollection = client.db("petsHealthCare").collection("blogs");
+        const faqCollection = client.db("petsHealthCare").collection("faq");
 
         // ---> jwt token
         app.post('/jwt', (req, res) => {
@@ -69,6 +70,12 @@ const run = async () => {
             const blogs = await blogsCollection.find(query).toArray();
             res.send(blogs)
         })
+        //---> faq 
+        app.get('/faq', async (req, res) => {
+            const query = {};
+            const faq = await faqCollection.find(query).toArray();
+            res.send(faq)
+        })
 
         // ---> create || add services
         app.post("/services", async (req, res) => {
@@ -98,7 +105,7 @@ const run = async () => {
             const query = { serviceTitle: title };
             const cursor = reviewsCollection.find(query);
             const result = await cursor.toArray()
-            res.send(result)
+            res.send(result.reverse())
         })
 
         // ---> my reviews
@@ -118,7 +125,7 @@ const run = async () => {
 
             const cursor = reviewsCollection.find(query);
             const result = await cursor.toArray()
-            res.send(result)
+            res.send(result.reverse())
         })
 
         //---> read single review
