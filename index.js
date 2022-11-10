@@ -28,6 +28,7 @@ const run = async () => {
         // ---> collections
         const servicesCollection = client.db("petsHealthCare").collection("services");
         const reviewsCollection = client.db("petsHealthCare").collection("reviews");
+        const blogsCollection = client.db("petsHealthCare").collection("blogs");
 
         // ---> jwt token
         app.post('/jwt', (req, res) => {
@@ -61,6 +62,12 @@ const run = async () => {
             const service3 = await servicesCollection.find(query).limit(limit).toArray();
             const services = await servicesCollection.find(query).toArray();
             res.send({ services, service3 })
+        })
+        //---> blogs 
+        app.get('/blogs', async (req, res) => {
+            const query = {};
+            const blogs = await blogsCollection.find(query).toArray();
+            res.send(blogs)
         })
 
         // ---> create || add services
