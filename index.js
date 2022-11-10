@@ -30,6 +30,7 @@ const run = async () => {
         const reviewsCollection = client.db("petsHealthCare").collection("reviews");
         const blogsCollection = client.db("petsHealthCare").collection("blogs");
         const faqCollection = client.db("petsHealthCare").collection("faq");
+        const whyChooseUsCollection = client.db("petsHealthCare").collection("whyChooseUs");
 
         // ---> jwt token
         app.post('/jwt', (req, res) => {
@@ -76,6 +77,12 @@ const run = async () => {
             const faq = await faqCollection.find(query).toArray();
             res.send(faq)
         })
+        //---> Why choose us 
+        app.get('/whyChooseUs', async (req, res) => {
+            const query = {};
+            const faq = await whyChooseUsCollection.find(query).toArray();
+            res.send(faq)
+        })
 
         // ---> create || add services
         app.post("/services", async (req, res) => {
@@ -91,6 +98,7 @@ const run = async () => {
             const service = await servicesCollection.findOne(query);
             res.send(service)
         })
+
 
         // ---> post || create review
         app.post('/review', async (req, res) => {
