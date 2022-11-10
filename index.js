@@ -121,6 +121,37 @@ const run = async () => {
             res.send(result)
         })
 
+        //---> read single review
+        app.get('/my-reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await reviewsCollection.findOne(query);
+            res.send(result)
+        })
+
+        // ---> update review
+        app.put(`/my-reviews/:id`, async (req, res) => {
+            const id = req.params.id;
+            const reviewItem = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateReview = {
+                $set: {
+                    review: reviewItem.review,
+                    serviceImg: reviewItem.serviceImg,
+                    userName: reviewItem.userName,
+                    photoURL: reviewItem.photoURL,
+                    serviceTitle: reviewItem.serviceTitle,
+                    userEmail: reviewItem.userEmail
+                },
+            };
+
+            const result = await reviewsCollection.updateOne(filter, updateReview, options);
+            res.send(result)
+        })
+
+
+
         // ---> delete review
         app.delete('/my-reviews/:id', async (req, res) => {
             const id = req.params.id;
